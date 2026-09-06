@@ -11,7 +11,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "vitest run tests/e2e",
-    "docker:build": "docker build -t ori-craft-labs:local ."
+    "docker:build": "docker build -t ori-craft-labs:local .",
+    "db:seed": "tsx scripts/seed.ts",
+    "admin:bootstrap": "tsx scripts/create-admin.ts"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -42,6 +44,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "tailwindcss": "^4",
+    "tsx": "^4.23.13",
     "typescript": "^5",
     "vite": "^8.2.2",
     "vitest": "^5.0.0"

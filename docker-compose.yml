@@ -11,6 +11,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
+      HOSTNAME: 0.0.0.0
     ports:
       - "127.0.0.1:3200:3000"
     read_only: true

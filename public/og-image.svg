@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">ORI Craft Labs</title>
+  <desc id="desc">Poczuj rytm. Żyj kulturą.</desc>
+  <defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#3b0b52"/><stop offset=".55" stop-color="#8e1a83"/><stop offset="1" stop-color="#ffb36b"/></linearGradient></defs>
+  <rect width="1200" height="630" fill="#170b21"/>
+  <rect x="40" y="40" width="1120" height="550" rx="42" fill="url(#g)"/>
+  <text x="100" y="245" fill="#fff" font-family="Arial, sans-serif" font-size="74" font-weight="700">ORI Craft Labs</text>
+  <text x="105" y="335" fill="#fff" font-family="Arial, sans-serif" font-size="42">Poczuj rytm. Żyj kulturą.</text>
+  <text x="105" y="420" fill="#ffe1b7" font-family="Arial, sans-serif" font-size="25">Wellness · kultura · jedzenie · Poznań</text>
+</svg>

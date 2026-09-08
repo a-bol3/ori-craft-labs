@@ -10,12 +10,18 @@ Required production variables:
 DATABASE_URL=postgresql://.../ori_craft_labs?sslmode=verify-full
 DATABASE_SSL_MODE=verify-full
 DATABASE_SSL_CA=<managed-cluster-ca-certificate-if-required>
+DATABASE_SSL_CA_FILE=/run/secrets/cockroach-root.crt
 DATABASE_POOL_SIZE=10
 DATABASE_CONNECTION_TIMEOUT_MS=5000
 DATABASE_STATEMENT_TIMEOUT_MS=10000
 ```
 
 The CockroachDB cluster must be exclusive to Ori Craft Labs. Do not reuse Ori OS databases, credentials, networks or backups.
+
+For a VPS deployment, prefer `DATABASE_SSL_CA_FILE` over placing the certificate
+contents in the environment. The CA is mounted read-only into the web
+container; the connection string remains in a mode-600 environment file and is
+never committed to the repository.
 
 ## Migration order
 

@@ -1,4 +1,5 @@
 // src/lib/db.ts
+import { readFileSync } from "node:fs";
 import { Pool } from "pg";
 import { sql } from "drizzle-orm";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -15,12 +16,13 @@ const globalForDb = globalThis as typeof globalThis & {
 export function getDb(): Database {
   if (globalForDb.oriDb) return globalForDb.oriDb;
   const env = getDatabaseEnv();
+  const sslCa = env.sslCaFile ? readFileSync(env.sslCaFile, "utf8") : env.sslCa;
   const pool = new Pool({
     connectionString: env.url,
     max: env.poolSize,
     connectionTimeoutMillis: env.connectionTimeoutMs,
     statement_timeout: env.statementTimeoutMs,
-    ssl: env.sslMode === "disable" ? false : { rejectUnauthorized: true, ca: env.sslCa || undefined },
+    ssl: env.sslMode === "disable" ? false : { rejectUnauthorized: true, ca: sslCa || undefined },
   });
   globalForDb.oriPool = pool;
   globalForDb.oriDb = drizzle(pool, { schema });

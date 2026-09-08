@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale, locales, messages } from "@/lib/i18n";
 
-const slugs = ["services", "offers", "about", "contact", "insights", "history", "faq", "partners", "legal", "privacy", "terms", "cookies", "cookie-preferences"] as const;
+const slugs = ["services", "about", "contact", "insights", "history", "faq", "partners", "legal", "privacy", "terms", "cookies", "cookie-preferences"] as const;
 
 export const dynamic = "force-static";
 
@@ -20,8 +20,8 @@ export default async function LocalizedSection({ params }: { params: Promise<{ l
   const { locale, slug } = await params;
   if (!isLocale(locale) || !slugs.includes(slug as (typeof slugs)[number])) notFound();
   const copy = messages[locale];
-  const key = slug === "contact" ? "contact" : slug === "about" ? "about" : slug === "services" ? "services" : slug === "offers" ? "offers" : "about";
-  const text = slug === "about" ? copy.aboutText : slug === "services" ? copy.servicesText : slug === "offers" ? copy.offersText : copy.description;
+  const key = slug === "contact" ? "contact" : slug === "about" ? "about" : slug === "services" ? "services" : "about";
+  const text = slug === "about" ? copy.aboutText : slug === "services" ? copy.servicesText : copy.description;
   return (
     <main className="min-h-screen bg-brand px-6 pb-24 pt-40 text-white">
       <div className="mx-auto max-w-4xl">

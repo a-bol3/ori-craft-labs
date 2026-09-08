@@ -13,12 +13,14 @@ This runbook is intentionally non-destructive. It keeps the current containers, 
 ## Blue-green release
 
 1. Build `ori-craft-labs:release-<git-sha>` away from the public ports.
-2. Run it on `127.0.0.1:3301` with a dedicated `.env.production` containing the dedicated MongoDB URI and Resend settings.
+2. Run it first on `127.0.0.1:3302` with a dedicated `.env.production` containing the exclusive CockroachDB URL and Resend settings. Port `3301` is reserved by the preserved legacy staging container.
 3. Verify `/api/health`, `/`, `/en`, `/es`, `/robots.txt`, `/sitemap.xml` and the public form contracts.
 4. Verify the other three public hosts before and after the change.
 5. Stop only the old ORI Craft Labs container after the new healthcheck is green; bind the new container to `127.0.0.1:3200`.
 6. Install the explicit Nginx blocks from `ops/nginx/ori-craft-labs.conf`, run `nginx -t`, and reload only after it passes.
 7. Keep the previous image and backup for rollback.
+
+The current SQL staging instance is intentionally not connected to Nginx. It uses an internal PostgreSQL container only to validate the SQL compatibility layer. Production must use the dedicated managed CockroachDB URL with TLS before the root upstream is changed.
 
 ## Rollback
 

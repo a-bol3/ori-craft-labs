@@ -34,7 +34,7 @@ export async function GET() {
         secondaryCtaLabel: "Zobacz ofertę",
         secondaryCtaHref: "#oferta",
       })
-    ).toObject();
+    );
   }
 
   return json({

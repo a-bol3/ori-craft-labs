@@ -1,8 +1,12 @@
 import { z } from "zod";
 
 const databaseSchema = z.object({
-  MONGODB_URI: z.string().min(1),
-  MONGODB_DB_NAME: z.string().min(1),
+  DATABASE_URL: z.string().url(),
+  DATABASE_SSL_MODE: z.enum(["disable", "require", "verify-full"]).default("require"),
+  DATABASE_SSL_CA: z.string().optional(),
+  DATABASE_POOL_SIZE: z.coerce.number().int().min(1).max(50).default(10),
+  DATABASE_CONNECTION_TIMEOUT_MS: z.coerce.number().int().min(1000).max(30000).default(5000),
+  DATABASE_STATEMENT_TIMEOUT_MS: z.coerce.number().int().min(1000).max(120000).default(10000),
 });
 
 const authSchema = z.object({
@@ -22,7 +26,14 @@ export function getDatabaseEnv() {
   if (!result.success) {
     throw new Error("Database configuration is unavailable.");
   }
-  return { uri: result.data.MONGODB_URI, dbName: result.data.MONGODB_DB_NAME };
+  return {
+    url: result.data.DATABASE_URL,
+    sslMode: result.data.DATABASE_SSL_MODE,
+    sslCa: result.data.DATABASE_SSL_CA,
+    poolSize: result.data.DATABASE_POOL_SIZE,
+    connectionTimeoutMs: result.data.DATABASE_CONNECTION_TIMEOUT_MS,
+    statementTimeoutMs: result.data.DATABASE_STATEMENT_TIMEOUT_MS,
+  };
 }
 
 export function getAuthEnv() {

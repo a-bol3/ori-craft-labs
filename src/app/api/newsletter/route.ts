@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
         $set: { consent: true, consentVersion, consentAt: new Date(), confirmationTokenHash: tokenHash, confirmationTokenExpiresAt: tokenExpiresAt, emailSent: false },
         $setOnInsert: { email: parsed.data.email },
       },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
+      { upsert: true, new: true }
     );
 
     let emailSent = false;

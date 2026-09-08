@@ -1,4 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Persistence
+
+Production uses a dedicated CockroachDB database through the PostgreSQL wire protocol. PostgreSQL is used for local development and compatibility tests. The application never dual-writes to both engines.
+
+Copy `.env.example` to `.env.local` and set `DATABASE_URL`. For local PostgreSQL:
+
+```bash
+docker compose -f docker-compose.db.yml up -d
+$env:DATABASE_URL="postgresql://ori:ori_local_only_change_me@127.0.0.1:55432/ori_craft_labs"
+npm run db:migrate
+npm run db:seed -- --apply
+npm run db:verify
+```
+
+For CockroachDB, use the TLS connection string supplied by the managed cluster and keep `DATABASE_SSL_MODE=verify-full`. Never commit `.env.local`, production credentials, certificates, or legacy MongoDB credentials.
+
+Database scripts:
+
+```text
+npm run db:generate       # generate Drizzle migrations from the schema
+npm run db:migrate        # apply versioned migrations
+npm run db:seed -- --apply
+npm run db:import:mongo   # inventory legacy MongoDB without writing
+npm run db:import:mongo -- --apply
+npm run db:verify
+```
 
 ## Getting Started
 

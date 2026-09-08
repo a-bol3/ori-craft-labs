@@ -1,48 +1,44 @@
 // src/lib/db.ts
-import mongoose from "mongoose";
+import { Pool } from "pg";
+import { sql } from "drizzle-orm";
+import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { getDatabaseEnv } from "@/lib/env";
+import * as schema from "@/lib/schema";
 
-interface MongooseCache {
-  conn: typeof mongoose | null;
-  promise: Promise<typeof mongoose> | null;
-}
+export type Database = NodePgDatabase<typeof schema>;
 
-const globalForMongoose = globalThis as typeof globalThis & {
-  mongoose?: MongooseCache;
+const globalForDb = globalThis as typeof globalThis & {
+  oriDb?: Database;
+  oriPool?: Pool;
 };
 
-const cached: MongooseCache = globalForMongoose.mongoose ?? { conn: null, promise: null };
-globalForMongoose.mongoose = cached;
+export function getDb(): Database {
+  if (globalForDb.oriDb) return globalForDb.oriDb;
+  const env = getDatabaseEnv();
+  const pool = new Pool({
+    connectionString: env.url,
+    max: env.poolSize,
+    connectionTimeoutMillis: env.connectionTimeoutMs,
+    statement_timeout: env.statementTimeoutMs,
+    ssl: env.sslMode === "disable" ? false : { rejectUnauthorized: true, ca: env.sslCa || undefined },
+  });
+  globalForDb.oriPool = pool;
+  globalForDb.oriDb = drizzle(pool, { schema });
+  return globalForDb.oriDb;
+}
 
-export async function dbConnect(): Promise<typeof mongoose> {
-  if (cached.conn) {
-    return cached.conn;
+export async function dbConnect() {
+  const db = getDb();
+  await db.execute(sql`select 1`);
+  return db;
+}
+
+export async function dbHealth() {
+  try {
+    await dbConnect();
+    return true;
+  } catch (error) {
+    console.error("DATABASE_HEALTH_ERROR", error instanceof Error ? error.message : "Unknown error");
+    return false;
   }
-
-  if (!cached.promise) {
-    const { uri, dbName } = getDatabaseEnv();
-
-    cached.promise = mongoose
-      .connect(uri, {
-        dbName,
-        serverSelectionTimeoutMS: 5000,
-        connectTimeoutMS: 5000,
-        socketTimeoutMS: 10000,
-        maxPoolSize: 10,
-      })
-      .then((mongooseInstance) => {
-        return mongooseInstance;
-      })
-      .catch((error) => {
-        cached!.promise = null;
-        console.error("MONGODB_CONNECTION_ERROR", {
-          name: error instanceof Error ? error.name : "UnknownError",
-          message: error instanceof Error ? error.message : "Unknown error",
-        });
-        throw error;
-      });
-  }
-
-  cached.conn = await cached.promise;
-  return cached.conn;
 }

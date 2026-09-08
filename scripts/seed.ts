@@ -1,12 +1,12 @@
-import mongoose from "mongoose";
 import { dbConnect } from "../src/lib/db";
 import { HeroSettings } from "../src/lib/models/HeroSettings";
 import { LegalPage } from "../src/lib/models/LegalPage";
 
-if (process.argv.includes("--help") || !process.argv.includes("--apply")) {
-  console.log("Safe seed. Provide --apply and production environment variables to write initial ORI content.");
-  process.exit(0);
-}
+async function main() {
+  if (process.argv.includes("--help") || !process.argv.includes("--apply")) {
+    console.log("Safe seed. Provide --apply and production environment variables to write initial ORI content.");
+    return;
+  }
 
 await dbConnect();
 
@@ -38,4 +38,6 @@ await LegalPage.bulkWrite([
 ]);
 
 console.log("ORI Craft Labs seed completed.");
-await mongoose.disconnect();
+}
+
+main().catch((error) => { console.error(error); process.exitCode = 1; });

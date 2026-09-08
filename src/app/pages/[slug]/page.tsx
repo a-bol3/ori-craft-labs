@@ -68,8 +68,8 @@ export default async function DynamicContentPage({ params }: Props) {
           <section className="mt-4 max-w-3xl space-y-4 text-white/80 leading-relaxed">
             {safeContent
               .split("\n")
-              .filter((line) => line.trim().length > 0)
-              .map((line, idx) => (
+              .filter((line: string) => line.trim().length > 0)
+              .map((line: string, idx: number) => (
                 <p key={idx}>{line}</p>
               ))}
           </section>

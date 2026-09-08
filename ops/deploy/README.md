@@ -13,14 +13,14 @@ This runbook is intentionally non-destructive. It keeps the current containers, 
 ## Blue-green release
 
 1. Build `ori-craft-labs:release-<git-sha>` away from the public ports.
-2. Run it first on an isolated loopback port with a dedicated `.env.production` containing the exclusive CockroachDB URL and Resend settings. Port `3301` is reserved by the preserved legacy staging container; the current Cockroach candidate used `3303` and the production blue-green container uses `3204`.
+2. Run it first on an isolated loopback port with a dedicated `.env.production` containing the exclusive CockroachDB URL and Resend settings. Port `3301` is reserved by the preserved legacy staging container; the current Cockroach candidate used `3303`, the first production blue-green container used `3204`, and the active Resend-enabled container uses `3205`.
 3. Verify `/api/health`, `/`, `/en`, `/es`, `/robots.txt`, `/sitemap.xml` and the public form contracts.
 4. Verify the other three public hosts before and after the change.
-5. Switch the root upstream only after the new healthcheck is green. The current production upstream is `127.0.0.1:3204`; the previous application remains on `127.0.0.1:3200` for rollback during observation. Normalize to port `3200` only in a later maintenance window after rollback is no longer needed.
+5. Switch the root upstream only after the new healthcheck is green. The current production upstream is `127.0.0.1:3205`; the previous SQL container remains on `127.0.0.1:3204` and the recovered application on `127.0.0.1:3200` for rollback during observation. Normalize to port `3200` only in a later maintenance window after rollback is no longer needed.
 6. Install the explicit Nginx blocks from `ops/nginx/ori-craft-labs.conf`, run `nginx -t`, and reload only after it passes.
 7. Keep the previous image and backup for rollback.
 
-The current SQL staging instance is intentionally not connected to Nginx. It uses an internal PostgreSQL container only to validate the SQL compatibility layer. Production now uses the dedicated managed CockroachDB URL with TLS; the root upstream was changed to the blue-green container only after external smoke tests passed. Resend remains a separate configuration step; until its key is installed, submissions persist but report `emailSent: false`.
+The current SQL staging instance is intentionally not connected to Nginx. It uses an internal PostgreSQL container only to validate the SQL compatibility layer. Production now uses the dedicated managed CockroachDB URL with TLS and a verified Resend domain; the root upstream was changed to the blue-green container only after external smoke tests passed. The public contact endpoint has returned `emailSent: true` and the active container survived a restart.
 
 ## Rollback
 

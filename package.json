@@ -18,6 +18,7 @@
     "db:import:mongo": "tsx scripts/import-mongo.ts",
     "db:verify": "tsx scripts/verify-db.ts",
     "db:grant-app": "tsx scripts/grant-app-permissions.ts",
+    "db:provision": "tsx scripts/provision-database.ts",
     "admin:bootstrap": "tsx scripts/create-admin.ts",
     "content:seed-recovered": "tsx scripts/seed-recovered.ts"
   },

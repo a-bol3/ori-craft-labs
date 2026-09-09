@@ -1,0 +1,39 @@
+{
+  "canonical": "OriCraftLabs - website copy",
+  "sources": [
+    {
+      "name": "OriCraftLabs - website copy",
+      "role": "Public pages, events, insights, blog and legal drafts",
+      "localPath": "C:/Users/48791/Downloads/OriCraftLabs - website copy",
+      "sha256": "EB8B546C8CA7B36FC7322670058F9F140816D2299476EE8341A8BBFB91ED0A9F",
+      "editorialStatus": "source-review-required"
+    },
+    {
+      "name": "OFERTY & USŁUGI ORI CRAFT LABS 12/2025",
+      "role": "Services, packages and pricing reference",
+      "localPath": "C:/Users/48791/Downloads/OFERTY & USŁUGI ORI CRAFT LABS 12_2025",
+      "sha256": "8E28022D5FFB91FDB96F94EB2551CE03690A3A34EB0526CBDF7CAAB0EED153FB",
+      "editorialStatus": "commercial-review-required"
+    },
+    {
+      "name": "ori_craft_labs_text_content_en",
+      "role": "Structured English copy and localization source",
+      "localPath": "C:/Users/48791/Downloads/ori_craft_labs_text_content_en",
+      "sha256": "392BF734CAC568EF8974E62ECD59DE30C5929582CECCC6362F02B2E7AA31ECF4",
+      "editorialStatus": "translation-review-required"
+    },
+    {
+      "name": "Ori Craft Labs SaaS Blueprint",
+      "role": "Product and CMS architecture reference",
+      "localPath": "C:/Users/48791/Downloads/Ori Craft Labs SaaS Blueprint",
+      "sha256": "83EF0EB39ABEC5A210A7BC33A1C6FC875D00841CC69260A5C93F5506E7A5F9FE",
+      "editorialStatus": "architecture-reference"
+    }
+  ],
+  "rules": [
+    "Recovered files are references and are not served as public assets.",
+    "Historical event dates remain drafts until owners update them.",
+    "Prices and legal placeholders require owner approval before publication.",
+    "The CMS becomes the operational source after the initial import."
+  ]
+}

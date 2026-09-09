@@ -4,6 +4,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
 import { InsightPost } from "@/lib/models/InsightPost";
+import { getSessionUser } from "@/lib/auth";
+import { recordAudit, recordRevision, revisionPayload } from "@/lib/editorial";
 
 function json(data: any, init?: { status?: number }) {
   return NextResponse.json(data, { status: init?.status ?? 200 });
@@ -27,6 +29,8 @@ export async function GET() {
     locale: p.locale,
     excerpt: p.excerpt,
     content: p.content,
+    status: p.status,
+    version: p.version,
     publishedAt: p.publishedAt ? p.publishedAt.toISOString() : null,
     createdAt: p.createdAt ? p.createdAt.toISOString() : null,
   }));
@@ -43,7 +47,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const { title, slug, category, locale, excerpt, content } = body || {};
 
-  if (!title || !slug || !excerpt || !content) {
+  if (!title || !slug || !excerpt || !content || !["pl", "en", "es"].includes(locale)) {
     return json(
       { success: false, error: "Title, slug, excerpt and content are required." },
       { status: 400 }
@@ -51,6 +55,7 @@ export async function POST(req: NextRequest) {
   }
 
   await dbConnect();
+  const user = await getSessionUser();
 
   const existing = await InsightPost.findOne({ slug });
   if (existing) {
@@ -67,8 +72,14 @@ export async function POST(req: NextRequest) {
     locale: locale || "pl",
     excerpt,
     content,
-    publishedAt: new Date(),
+    status: "draft",
+    version: 1,
+    publishedAt: null,
+    updatedBy: user?.id,
   });
+
+  await recordRevision({ entityType: "insight", entityId: String(doc._id), locale, version: 1, status: "draft", payload: revisionPayload(doc as unknown as Record<string, unknown>), createdBy: user?.id, note: "Created from CMS" });
+  await recordAudit({ actorUserId: user?.id, action: "content.created", entity: "insight", entityId: String(doc._id), metadata: { locale } });
 
   return json(
     {
@@ -81,6 +92,8 @@ export async function POST(req: NextRequest) {
         locale: doc.locale,
         excerpt: doc.excerpt,
         content: doc.content,
+        status: doc.status,
+        version: doc.version,
         publishedAt: doc.publishedAt?.toISOString() ?? null,
         createdAt: doc.createdAt?.toISOString() ?? null,
       },

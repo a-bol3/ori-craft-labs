@@ -17,7 +17,7 @@ export default async function DashboardLayout({
   const session = await getServerSession(authOptions);
 
   // If not logged in → go to login page
-  if (!session) {
+  if (!session || (session.user as any).role !== "admin") {
     redirect("/login");
   }
 

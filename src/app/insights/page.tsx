@@ -20,7 +20,7 @@ export default async function InsightsPage() {
   await dbConnect();
 
   // For now we use only Polish (pl). Later we can add EN/ES.
-  const raw = await InsightPost.find({ locale: "pl" })
+  const raw = await InsightPost.find({ locale: "pl", status: "published" })
     .sort({ publishedAt: -1, createdAt: -1 })
     .lean();
 
@@ -33,36 +33,7 @@ export default async function InsightsPage() {
     slug: p.slug,
   }));
 
-  // Fallback: if DB is empty, you can keep your original 3 demo posts
-  const fallbackPosts = [
-    {
-      title:
-        "Dlaczego powolny ruch może być potężniejszy niż ciężki trening",
-      date: "2023-10-15",
-      category: "Movement",
-      excerpt:
-        "Discover how slowing down your movement practice can actually build more strength and awareness than high-intensity workouts.",
-      slug: "slow-movement-power",
-    },
-    {
-      title: "Kawa, muzyka i małe rytuały dla zmęczonych głów",
-      date: "2023-10-22",
-      category: "Rituals",
-      excerpt:
-        "Small daily rituals involving coffee and music can reset your nervous system in just 10 minutes.",
-      slug: "coffee-music-rituals",
-    },
-    {
-      title: "Od kroków tanecznych do świadomości ciała",
-      date: "2023-11-05",
-      category: "Body Awareness",
-      excerpt:
-        "Transitioning from structured dance steps to intuitive body awareness can unlock new levels of expression.",
-      slug: "dance-steps-to-awareness",
-    },
-  ];
-
-  const posts = postsFromDb.length > 0 ? postsFromDb : fallbackPosts;
+  const posts = postsFromDb;
 
   return (
     <main className="min-h-screen bg-brand pt-24 pb-16 relative overflow-hidden">

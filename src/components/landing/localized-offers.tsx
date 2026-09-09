@@ -36,7 +36,7 @@ const copy = {
 export async function LocalizedOffers({ locale }: { locale: Locale }) {
   const labels = copy[locale];
   await dbConnect();
-  const offers = await Offer.find({ locale, isActive: true })
+  const offers = await Offer.find({ locale, isActive: true, status: "published" })
     .sort({ order: 1, createdAt: 1 })
     .lean();
 

@@ -20,10 +20,10 @@ export async function generateMetadata({
     title: messages[locale].offers,
     description: messages[locale].offersText,
     alternates: {
-      canonical: `/${locale}/offers`,
-      languages: Object.fromEntries(locales.map((item) => [item, `/${item}/offers`])),
+      canonical: locale === "pl" ? "/offers" : `/${locale}/offers`,
+      languages: { pl: "/offers", en: "/en/offers", es: "/es/offers" },
     },
-    openGraph: { locale: messages[locale].lang, url: `https://ori-craftlabs.com/${locale}/offers` },
+    openGraph: { locale: messages[locale].lang, url: `https://ori-craftlabs.com${locale === "pl" ? "/offers" : `/${locale}/offers`}` },
   };
 }
 

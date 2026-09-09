@@ -30,7 +30,7 @@ const GROUP_TITLES: Record<OfferGroup, string> = {
 
 export default async function OffersPage() {
   await dbConnect();
-  const offers = await Offer.find({ locale: "pl", isActive: true })
+  const offers = await Offer.find({ locale: "pl", isActive: true, status: "published" })
     .sort({ group: 1, order: 1 })
     .lean();
 

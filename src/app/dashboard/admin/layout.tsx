@@ -58,12 +58,6 @@ export default async function AdminLayout({
             >
               CMS
             </Link>
-            <Link
-              href="/dashboard/admin/finance"
-              className="text-white/80 hover:text-cta"
-            >
-              Finanse
-            </Link>
           </nav>
         </div>
       </header>

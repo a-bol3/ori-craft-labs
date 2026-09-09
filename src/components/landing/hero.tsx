@@ -7,7 +7,7 @@ import { GlowingButton } from "@/components/ui/glowing-button";
 import Link from "next/link";
 
 
-export function Hero() {
+export function Hero({ copy }: { copy?: { titleLine1: string; titleLine2: string; subtitle: string; primaryCtaLabel: string; primaryCtaHref: string; secondaryCtaLabel: string; secondaryCtaHref: string } }) {
     const container = useRef<HTMLDivElement>(null);
     const textRef = useRef<HTMLDivElement>(null);
 
@@ -37,22 +37,22 @@ export function Hero() {
             </div>
             <div ref={textRef} className="flex flex-col items-center relative z-10">
                 <h1 className="text-4xl md:text-6xl lg:text-8xl font-black tracking-tighter text-white mb-6 uppercase flex flex-col gap-2 font-display leading-[1.1] py-2">
-                    <span className="leading-none">Poczuj rytm.</span>
+                    <span className="leading-none">{copy?.titleLine1 || "Poczuj rytm."}</span>
                     <span className="leading-none text-transparent bg-clip-text bg-linear-to-r from-accent1 via-cta to-accent2 pb-2">
-                        Żyj kulturą.
+                        {copy?.titleLine2 || "Żyj kulturą."}
                     </span>
                 </h1>
 
                 <p className="max-w-2xl text-lg md:text-xl text-white/80 mb-10 leading-relaxed font-light font-body">
-                    Ori Craft Labs to ciepła przestrzeń, gdzie latynoski ruch, świadomość ciała, kubańsko-polskie smaki i wspólne rytuały łączą się w jedno doświadczenie.
+                    {copy?.subtitle || "Ori Craft Labs to ciepła przestrzeń, gdzie latynoski ruch, świadomość ciała, kubańsko-polskie smaki i wspólne rytuały łączą się w jedno doświadczenie."}
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 items-center">
-                    <GlowingButton href="/services" innerClassName="text-lg px-8 py-4">
-                        Rozpocznij podróż
+                    <GlowingButton href={copy?.primaryCtaHref || "/services"} innerClassName="text-lg px-8 py-4">
+                        {copy?.primaryCtaLabel || "Rozpocznij podróż"}
                     </GlowingButton>
-                    <Link href="/offers" className="px-8 py-4 border border-white/30 text-white font-bold rounded-full hover:bg-white/10 transition-colors text-lg backdrop-blur-sm font-heading">
-                        Zobacz ofertę
+                    <Link href={copy?.secondaryCtaHref || "/offers"} className="px-8 py-4 border border-white/30 text-white font-bold rounded-full hover:bg-white/10 transition-colors text-lg backdrop-blur-sm font-heading">
+                        {copy?.secondaryCtaLabel || "Zobacz ofertę"}
                     </Link>
                 </div>
             </div>

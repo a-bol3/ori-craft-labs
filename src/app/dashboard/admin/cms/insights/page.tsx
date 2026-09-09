@@ -16,6 +16,8 @@ export default async function CmsInsightsPage() {
     locale: p.locale,
     excerpt: p.excerpt,
     content: p.content,
+    status: p.status,
+    version: p.version,
     publishedAt: p.publishedAt ? p.publishedAt.toISOString() : null,
   }));
 

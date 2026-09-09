@@ -69,6 +69,7 @@ function query(table: AnyTable, filter: Filter = {}) {
 export function createSqlModel(table: AnyTable) {
   const model = {
     find(filter: Filter = {}) { return query(table, filter); },
+    findById(id: string) { return model.findOne({ _id: id }); },
     findOne(filter: Filter = {}) {
       let sortSpec: { field: string; direction: "asc" | "desc" } | null = null;
       const result = {

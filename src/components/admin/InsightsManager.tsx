@@ -12,6 +12,8 @@ type InsightPost = {
   excerpt: string;
   content: string;
   publishedAt: string | null;
+  status?: "draft" | "review" | "published" | "archived";
+  version?: number;
 };
 
 const categories = [
@@ -131,6 +133,21 @@ export function InsightsManager({ initialPosts }: { initialPosts: InsightPost[] 
       alert("Could not delete post. Check console.");
     } finally {
       setDeletingId(null);
+    }
+  }
+
+  async function handlePublish(id: string) {
+    setSavingId(id);
+    try {
+      const res = await fetch(`/api/admin/insights/${id}`, { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) throw new Error(data.error || "Error publishing post");
+      setPosts((prev) => prev.map((post) => post.id === id ? { ...post, ...data.post } : post));
+    } catch (error) {
+      console.error("PUBLISH_INSIGHT_ERROR:", error);
+      alert("Could not publish post. Check the fields and try again.");
+    } finally {
+      setSavingId(null);
     }
   }
 
@@ -273,8 +290,12 @@ export function InsightsManager({ initialPosts }: { initialPosts: InsightPost[] 
                   <span className="px-3 py-1 rounded-full text-xs bg-white/10 text-white/60">
                     {p.slug}
                   </span>
+                  <span className={`px-3 py-1 rounded-full text-xs ${p.status === "published" ? "bg-emerald-400/20 text-emerald-200" : "bg-amber-400/20 text-amber-200"}`}>
+                    {p.status || "draft"}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
+                  {p.status !== "published" && <button type="button" onClick={() => handlePublish(p.id)} disabled={savingId === p.id} className="px-3 py-1 rounded-full text-xs font-semibold bg-cta text-black hover:bg-cta/90 transition-colors disabled:opacity-60">{savingId === p.id ? "Publishing..." : "Publish"}</button>}
                   <button
                     type="button"
                     onClick={() => handleDelete(p.id)}

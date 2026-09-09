@@ -46,6 +46,14 @@ The MongoDB import is read-only unless `--apply` is supplied. It requires `LEGAC
 7. Rotate or remove migration credentials after deployment.
 8. Keep the legacy MongoDB backup untouched during the observation period.
 
+## Editorial workflow
+
+The editorial migration is additive. Existing records remain available while
+the CMS gains `draft`, `review`, `published` and `archived` states. Each
+explicit publication creates a row in `content_revisions`. Event requests are
+stored in `requests`, and email delivery is tracked in `notification_queue` so
+publishing content never sends or duplicates a customer notification.
+
 ## Recovery
 
 CockroachDB backups and exports are required in addition to its internal replication. Test restoration into a separate database before production cutover. A VPS backup alone does not protect a managed database, and a database backup alone does not keep the web application available if the VPS fails.

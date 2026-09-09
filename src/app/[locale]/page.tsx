@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { LocalizedHome } from "@/components/landing/localized-home";
 import { isLocale, locales, messages, type Locale } from "@/lib/i18n";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -16,10 +16,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title: messages[locale].tagline,
     description: messages[locale].description,
     alternates: {
-      canonical: `/${locale}`,
-      languages: Object.fromEntries(locales.map((item) => [item, `/${item}`])),
+      canonical: locale === "pl" ? "/" : `/${locale}`,
+      languages: { pl: "/", en: "/en", es: "/es" },
     },
-    openGraph: { locale: messages[locale].lang, url: `https://ori-craftlabs.com/${locale}` },
+    openGraph: { locale: messages[locale].lang, url: `https://ori-craftlabs.com${locale === "pl" ? "/" : `/${locale}`}` },
   };
 }
 

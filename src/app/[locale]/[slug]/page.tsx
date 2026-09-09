@@ -4,7 +4,7 @@ import { isLocale, locales, messages } from "@/lib/i18n";
 
 const slugs = ["services", "about", "contact", "insights", "history", "faq", "partners", "legal", "privacy", "terms", "cookies", "cookie-preferences"] as const;
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
   return locales.flatMap((locale) => slugs.map((slug) => ({ locale, slug })));

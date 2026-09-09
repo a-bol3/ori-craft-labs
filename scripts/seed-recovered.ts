@@ -60,7 +60,7 @@ async function seedPost(post: (typeof posts)[number]) {
 async function seedEvent(event: (typeof events)[number]) {
   const existing = await Event.findOne({ slug: event.slug, locale: "pl" }).lean();
   if (existing) return;
-  const created = await Event.create({ id: randomUUID(), ...event, locale: "pl", status: "draft", version: 1 });
+  const created = await Event.create({ id: randomUUID(), ...event, startsAt: new Date(event.startsAt), locale: "pl", status: "draft", version: 1 });
   await recordRevision({ entityType: "event", entityId: String(created._id), locale: "pl", version: 1, status: "draft", payload: revisionPayload(created), note: "Recovered historical event; date requires owner update" });
 }
 

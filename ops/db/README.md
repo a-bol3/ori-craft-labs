@@ -46,6 +46,13 @@ The MongoDB import is read-only unless `--apply` is supplied. It requires `LEGAC
 7. Rotate or remove migration credentials after deployment.
 8. Keep the legacy MongoDB backup untouched during the observation period.
 
+Create a separate database for staging before running any staging migration or
+seed. Never reuse the production database URL for a staging container:
+
+```bash
+TARGET_DATABASE=ori_craftlabs_staging npm run db:provision
+```
+
 ## Editorial workflow
 
 The migration user applies schema changes. After each additive migration, grant

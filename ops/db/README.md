@@ -48,6 +48,16 @@ The MongoDB import is read-only unless `--apply` is supplied. It requires `LEGAC
 
 ## Editorial workflow
 
+The migration user applies schema changes. After each additive migration, grant
+the runtime role only the CRUD permissions it needs on newly created tables:
+
+```bash
+APP_DB_ROLE=ori_craftlabs_app npm run db:grant-app
+```
+
+The script validates the role identifier and never prints the database URL or
+password.
+
 The editorial migration is additive. Existing records remain available while
 the CMS gains `draft`, `review`, `published` and `archived` states. Each
 explicit publication creates a row in `content_revisions`. Event requests are

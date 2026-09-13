@@ -10,6 +10,8 @@ const cmsLinks = [
   { href: "/dashboard/admin/cms/hero", label: "Hero & homepage" },
   { href: "/dashboard/admin/cms/services", label: "Services" },
   { href: "/dashboard/admin/cms/offers", label: "Offers & Packages" },
+  { href: "/dashboard/admin/cms/insights", label: "Insights / Blog" },
+  { href: "/dashboard/admin/cms/pages", label: "Pages" },
   { href: "/dashboard/admin/cms/legal", label: "Legal pages" },
   { href: "/dashboard/admin/cms/partners", label: "Partners" },
   { href: "/dashboard/admin/cms/media", label: "Media (images, video)" },

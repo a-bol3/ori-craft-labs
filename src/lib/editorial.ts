@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { auditLogs, contentRevisions } from "@/lib/schema";
 
@@ -31,6 +32,23 @@ export async function recordRevision(input: {
     note: input.note,
     publishedAt: input.status === "published" ? new Date() : null,
   }).returning();
+}
+
+export async function latestDraftRevision(entityType: string, entityId: string) {
+  const [revision] = await getDb()
+    .select()
+    .from(contentRevisions)
+    .where(
+      and(
+        eq(contentRevisions.entityType, entityType),
+        eq(contentRevisions.entityId, entityId),
+        inArray(contentRevisions.status, ["draft", "review"])
+      )
+    )
+    .orderBy(desc(contentRevisions.version))
+    .limit(1);
+
+  return revision ?? null;
 }
 
 export async function recordAudit(input: {

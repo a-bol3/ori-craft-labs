@@ -2,24 +2,34 @@
 import { dbConnect } from "@/lib/db";
 import { InsightPost } from "@/lib/models/InsightPost";
 import { InsightsManager } from "@/components/admin/InsightsManager";
+import { latestDraftRevision } from "@/lib/editorial";
 
 export default async function CmsInsightsPage() {
   await dbConnect();
 
   const raw = await InsightPost.find().sort({ createdAt: -1 }).lean();
 
-  const posts = raw.map((p: any) => ({
-    id: p._id.toString(),
-    title: p.title,
-    slug: p.slug,
-    category: p.category,
-    locale: p.locale,
-    excerpt: p.excerpt,
-    content: p.content,
-    status: p.status,
-    version: p.version,
-    publishedAt: p.publishedAt ? p.publishedAt.toISOString() : null,
-  }));
+  const posts = await Promise.all(
+    raw.map(async (p: any) => {
+      const draft = await latestDraftRevision("insight", p._id.toString());
+      const value = draft && Number(draft.version) > Number(p.version ?? 0)
+        ? { ...p, ...(draft.payload as Record<string, unknown>), status: draft.status, version: draft.version, publishedAt: null }
+        : p;
+
+      return {
+        id: value._id.toString(),
+        title: value.title,
+        slug: value.slug,
+        category: value.category,
+        locale: value.locale,
+        excerpt: value.excerpt,
+        content: value.content,
+        status: value.status,
+        version: value.version,
+        publishedAt: value.publishedAt ? value.publishedAt.toISOString() : null,
+      };
+    })
+  );
 
   return (
     <section className="space-y-6">

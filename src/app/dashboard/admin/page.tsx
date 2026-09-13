@@ -68,6 +68,16 @@ export default async function AdminDashboardPage() {
           description="Edytuj teksty na stronę: usługi, oferta, inspiracje."
         />
         <NavTile
+          href="/dashboard/admin/cms/insights"
+          title="Insights / Blog"
+          description="Twórz, edytuj i publikuj artykuły oraz aktualności."
+        />
+        <NavTile
+          href="/dashboard/admin/cms/pages"
+          title="Strony"
+          description="Zarządzaj stronami własnymi i ich stanem publikacji."
+        />
+        <NavTile
           href="/dashboard/admin/finance"
           title="Finanse"
           description="Przychody, koszty i proste raporty finansowe."

@@ -38,6 +38,7 @@ export function InsightsManager({ initialPosts }: { initialPosts: InsightPost[] 
   } as any);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [dirtyIds, setDirtyIds] = useState<Set<string>>(new Set());
 
   function handleNewChange(field: keyof typeof newPost, value: string) {
     setNewPost((prev) => ({ ...prev, [field]: value }));
@@ -100,8 +101,26 @@ export function InsightsManager({ initialPosts }: { initialPosts: InsightPost[] 
       }
 
       setPosts((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, ...patch } : p))
+        prev.map((p) =>
+          p.id === id
+            ? {
+                ...p,
+                ...patch,
+                status: "draft",
+                publishedAt: null,
+                version:
+                  typeof data.post?.version === "number"
+                    ? data.post.version
+                    : p.version,
+              }
+            : p
+        )
       );
+      setDirtyIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     } catch (err) {
       console.error("UPDATE_INSIGHT_ERROR:", err);
       alert("Could not update post. Check console.");
@@ -136,7 +155,30 @@ export function InsightsManager({ initialPosts }: { initialPosts: InsightPost[] 
     }
   }
 
+  function markDirty(id: string) {
+    setDirtyIds((prev) => new Set(prev).add(id));
+  }
+
+  async function handleSaveDraft(id: string) {
+    const post = posts.find((item) => item.id === id);
+    if (!post) return;
+
+    await handleUpdate(id, {
+      title: post.title,
+      slug: post.slug,
+      category: post.category,
+      locale: post.locale,
+      excerpt: post.excerpt,
+      content: post.content,
+    });
+  }
+
   async function handlePublish(id: string) {
+    if (dirtyIds.has(id)) {
+      alert("Save the draft before publishing it.");
+      return;
+    }
+
     setSavingId(id);
     try {
       const res = await fetch(`/api/admin/insights/${id}`, { method: "POST" });
@@ -146,6 +188,37 @@ export function InsightsManager({ initialPosts }: { initialPosts: InsightPost[] 
     } catch (error) {
       console.error("PUBLISH_INSIGHT_ERROR:", error);
       alert("Could not publish post. Check the fields and try again.");
+    } finally {
+      setSavingId(null);
+    }
+  }
+
+  async function handleUnpublish(id: string) {
+    setSavingId(id);
+    try {
+      const res = await fetch(`/api/admin/insights/${id}`, { method: "PUT" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Error unpublishing post");
+      }
+      setPosts((prev) =>
+        prev.map((post) =>
+          post.id === id
+            ? {
+                ...post,
+                status: "draft",
+                publishedAt: null,
+                version:
+                  typeof data.post?.version === "number"
+                    ? data.post.version
+                    : post.version,
+              }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error("UNPUBLISH_INSIGHT_ERROR:", error);
+      alert("Could not unpublish post. Check the fields and try again.");
     } finally {
       setSavingId(null);
     }
@@ -295,7 +368,33 @@ export function InsightsManager({ initialPosts }: { initialPosts: InsightPost[] 
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (dirtyIds.has(p.id)) {
+                        alert("Save the draft before opening its preview.");
+                        return;
+                      }
+                      window.open(
+                        `/insights/${encodeURIComponent(p.slug)}?preview=1`,
+                        "_blank",
+                        "noopener,noreferrer"
+                      );
+                    }}
+                    className="px-3 py-1 rounded-full text-xs font-semibold border border-white/20 text-white/80 hover:border-cta hover:text-cta transition-colors"
+                  >
+                    Preview
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSaveDraft(p.id)}
+                    disabled={savingId === p.id || !dirtyIds.has(p.id)}
+                    className="px-3 py-1 rounded-full text-xs font-semibold border border-cta/60 text-cta hover:bg-cta/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {savingId === p.id ? "Saving..." : "Save draft"}
+                  </button>
                   {p.status !== "published" && <button type="button" onClick={() => handlePublish(p.id)} disabled={savingId === p.id} className="px-3 py-1 rounded-full text-xs font-semibold bg-cta text-black hover:bg-cta/90 transition-colors disabled:opacity-60">{savingId === p.id ? "Publishing..." : "Publish"}</button>}
+                  {p.status === "published" && <button type="button" onClick={() => handleUnpublish(p.id)} disabled={savingId === p.id} className="px-3 py-1 rounded-full text-xs font-semibold border border-amber-300/50 text-amber-200 hover:bg-amber-300/10 transition-colors disabled:opacity-60">Unpublish</button>}
                   <button
                     type="button"
                     onClick={() => handleDelete(p.id)}
@@ -312,26 +411,24 @@ export function InsightsManager({ initialPosts }: { initialPosts: InsightPost[] 
                   type="text"
                   value={p.title}
                   onChange={(e) =>
+                    (markDirty(p.id),
                     setPosts((prev) =>
                       prev.map((x) =>
                         x.id === p.id ? { ...x, title: e.target.value } : x
                       )
-                    )
+                    ))
                   }
-                  onBlur={(e) => handleUpdate(p.id, { title: e.target.value })}
                   className="w-full bg-black/20 border border-white/15 rounded-lg px-3 py-2 text-sm text-white font-heading focus:outline-none focus:border-cta focus:ring-1 focus:ring-cta"
                 />
                 <textarea
                   value={p.excerpt}
                   onChange={(e) =>
+                    (markDirty(p.id),
                     setPosts((prev) =>
                       prev.map((x) =>
                         x.id === p.id ? { ...x, excerpt: e.target.value } : x
                       )
-                    )
-                  }
-                  onBlur={(e) =>
-                    handleUpdate(p.id, { excerpt: e.target.value })
+                    ))
                   }
                   className="w-full bg-black/20 border border-white/15 rounded-lg px-3 py-2 text-xs text-white/90 font-body focus:outline-none focus:border-cta focus:ring-1 focus:ring-cta"
                   rows={2}
@@ -339,14 +436,12 @@ export function InsightsManager({ initialPosts }: { initialPosts: InsightPost[] 
                 <textarea
                   value={p.content}
                   onChange={(e) =>
+                    (markDirty(p.id),
                     setPosts((prev) =>
                       prev.map((x) =>
                         x.id === p.id ? { ...x, content: e.target.value } : x
                       )
-                    )
-                  }
-                  onBlur={(e) =>
-                    handleUpdate(p.id, { content: e.target.value })
+                    ))
                   }
                   className="w-full bg-black/20 border border-white/15 rounded-lg px-3 py-2 text-xs text-white/90 font-body focus:outline-none focus:border-cta focus:ring-1 focus:ring-cta"
                   rows={4}

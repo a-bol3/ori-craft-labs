@@ -5,7 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
 import { InsightPost } from "@/lib/models/InsightPost";
 import { getSessionUser } from "@/lib/auth";
-import { recordAudit, recordRevision, revisionPayload } from "@/lib/editorial";
+import { latestDraftRevision, recordAudit, recordRevision, revisionPayload } from "@/lib/editorial";
 
 function json(data: any, init?: { status?: number }) {
   return NextResponse.json(data, { status: init?.status ?? 200 });
@@ -21,19 +21,28 @@ export async function GET() {
 
   const posts = await InsightPost.find().sort({ createdAt: -1 }).lean();
 
-  const safePosts = posts.map((p: any) => ({
-    id: p._id.toString(),
-    title: p.title,
-    slug: p.slug,
-    category: p.category,
-    locale: p.locale,
-    excerpt: p.excerpt,
-    content: p.content,
-    status: p.status,
-    version: p.version,
-    publishedAt: p.publishedAt ? p.publishedAt.toISOString() : null,
-    createdAt: p.createdAt ? p.createdAt.toISOString() : null,
-  }));
+  const safePosts = await Promise.all(
+    posts.map(async (p: any) => {
+      const draft = await latestDraftRevision("insight", p._id.toString());
+      const value = draft && Number(draft.version) > Number(p.version ?? 0)
+        ? { ...p, ...(draft.payload as Record<string, unknown>), status: draft.status, version: draft.version, publishedAt: null }
+        : p;
+
+      return {
+        id: value._id.toString(),
+        title: value.title,
+        slug: value.slug,
+        category: value.category,
+        locale: value.locale,
+        excerpt: value.excerpt,
+        content: value.content,
+        status: value.status,
+        version: value.version,
+        publishedAt: value.publishedAt ? value.publishedAt.toISOString() : null,
+        createdAt: value.createdAt ? value.createdAt.toISOString() : null,
+      };
+    })
+  );
 
   return json({ success: true, posts: safePosts });
 }

@@ -77,8 +77,22 @@ CockroachDB backups and exports are required in addition to its internal replica
 
 ### Production backup verification status — 2026-09-13
 
-Not yet verified. Before production sign-off, record the managed cluster's
-backup schedule, retention period, most recent successful backup, and recovery
-point objective. Restore a backup into a separate non-production database,
-then run `npm run db:verify` against that restored database. Do not restore over
-production, and do not put connection strings or credentials in this record.
+CockroachDB Cloud's **Backup and Restore** page for cluster
+`oricraftlabs-production` shows complete managed backups, including the
+2026-09-12 00:00 UTC snapshot (29 days remaining); the adjacent daily snapshot
+was also visible during inspection. The page reports 30-day retention. The
+cluster is on the Basic plan, whose UI says backup frequency (RPO) and retention
+cannot be configured without upgrading. The Hostinger restore points for VPS
+`751638` (2026-09-11 and 2026-09-04 UTC) protect only the VM disk and are not
+CockroachDB backups.
+
+**Restore drill remains incomplete.** The CockroachDB restore wizard for this
+backup offered only `oricraftlabs-production` as a compatible destination and
+described the operation as a cluster restore. The wizard was cancelled before
+any restore was initiated, to avoid overwriting production. The Databases page
+shows an existing `ori_craftlabs_staging` database, but the restore wizard does
+not offer database-level restore into it. Before production sign-off, arrange a
+safe, isolated restore target using a supported CockroachDB procedure (for
+example, a separately provisioned compatible cluster if required), then run
+`npm run db:verify` against the restored data. Do not restore over production,
+and do not put connection strings or credentials in this record.

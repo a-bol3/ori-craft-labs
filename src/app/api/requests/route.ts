@@ -61,9 +61,11 @@ export async function POST(req: NextRequest) {
         createdAt: new Date(),
       }).returning();
       try {
-        await sendEmail({ to: recipient, subject: queued.subject, text: queued.body, replyTo: parsed.data.email });
-        await getDb().update(notificationQueue).set({ sentAt: new Date() }).where(eq(notificationQueue.id, queued.id));
-        await Request.findByIdAndUpdate(String(created._id), { notificationStatus: "sent" });
+        const delivery = await sendEmail({ to: recipient, subject: queued.subject, text: queued.body, replyTo: parsed.data.email });
+        if (delivery.sent) {
+          await getDb().update(notificationQueue).set({ sentAt: new Date() }).where(eq(notificationQueue.id, queued.id));
+          await Request.findByIdAndUpdate(String(created._id), { notificationStatus: "sent" });
+        }
       } catch (emailError) {
         console.error("REQUEST_EMAIL_ERROR", emailError instanceof Error ? emailError.message : "Unknown error");
       }

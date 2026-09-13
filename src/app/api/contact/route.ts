@@ -48,14 +48,16 @@ export async function POST(req: NextRequest) {
     try {
       const config = process.env.CONTACT_NOTIFY_EMAIL;
       if (config) {
-        await sendEmail({
+        const delivery = await sendEmail({
           to: config,
           replyTo: parsed.data.email,
           subject: `[ORI contact] ${parsed.data.subject}`,
           text: `Name: ${parsed.data.name}\nEmail: ${parsed.data.email}\n\n${parsed.data.message}`,
         });
-        emailSent = true;
-        await ContactRequest.findByIdAndUpdate(record._id, { emailSent: true });
+        emailSent = delivery.sent;
+        if (emailSent) {
+          await ContactRequest.findByIdAndUpdate(record._id, { emailSent: true });
+        }
       }
     } catch (emailError) {
       console.error("CONTACT_EMAIL_ERROR", emailError instanceof Error ? emailError.message : "Unknown error");

@@ -48,13 +48,15 @@ export async function POST(req: NextRequest) {
       const confirmationUrl = `${getSiteUrl()}/api/newsletter/confirm?token=${token}`;
       const config = process.env.RESEND_FROM;
       if (config) {
-        await sendEmail({
+        const delivery = await sendEmail({
           to: parsed.data.email,
           subject: "Confirm your ORI Craft Labs subscription",
           text: `Confirm your subscription: ${confirmationUrl}\n\nIf you did not request this, you can ignore this email.`,
         });
-        emailSent = true;
-        await NewsletterSubscriber.findByIdAndUpdate(subscriber._id, { emailSent: true });
+        emailSent = delivery.sent;
+        if (emailSent) {
+          await NewsletterSubscriber.findByIdAndUpdate(subscriber._id, { emailSent: true });
+        }
       }
     } catch (emailError) {
       console.error("NEWSLETTER_EMAIL_ERROR", emailError instanceof Error ? emailError.message : "Unknown error");

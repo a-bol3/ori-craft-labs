@@ -376,7 +376,7 @@ export function InsightsManager({ initialPosts }: { initialPosts: InsightPost[] 
                         return;
                       }
                       window.open(
-                        `/insights/${encodeURIComponent(p.slug)}?preview=1`,
+                        `${p.locale === "pl" ? "" : `/${p.locale}`}/insights/${encodeURIComponent(p.slug)}?preview=1`,
                         "_blank",
                         "noopener,noreferrer"
                       );

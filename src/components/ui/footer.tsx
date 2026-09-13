@@ -2,10 +2,17 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import { Logo } from "@/components/ui/logo";
+import { getLocaleFromPathname, localizedPath } from "@/lib/locale-routing";
+import { messages } from "@/lib/i18n";
 
 export function Footer() {
+    const pathname = usePathname() || "/";
+    const locale = getLocaleFromPathname(pathname);
+    const copy = messages[locale];
+    const route = (path: string) => localizedPath(path, locale);
     const [newsletterEmail, setNewsletterEmail] = useState("");
     const [newsletterConsent, setNewsletterConsent] = useState(false);
     const [newsletterStatus, setNewsletterStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -40,7 +47,7 @@ export function Footer() {
 
     const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
         // If we are on the home page, just scroll smoothly to top
-        if (window.location.pathname === "/") {
+        if (pathname === "/" || /^\/(pl|en|es)$/.test(pathname)) {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: "smooth" });
         }
@@ -50,11 +57,11 @@ export function Footer() {
         <footer className="w-full bg-black/40 backdrop-blur-md border-t border-white/10 pt-16 pb-8 text-white relative z-50">
             <div className="container mx-auto px-8 grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                 <div className="col-span-1 md:col-span-1 flex flex-col items-start gap-6">
-                    <Link href="/" onClick={handleLogoClick} className="w-48 hover:opacity-80 transition-opacity">
+                    <Link href={locale === "pl" ? "/" : `/${locale}`} onClick={handleLogoClick} className="w-48 hover:opacity-80 transition-opacity">
                         <Logo className="w-full h-auto text-white" />
                     </Link>
                     <p className="text-cta mb-2 leading-relaxed font-body text-center uppercase">
-                        Poczuj rytm. Żyj kulturą.
+                        {copy.tagline}
                     </p>
                     <div className="flex gap-4">
                         {["IG", "TT", "FB", "LI", "YT"].map((social) => (
@@ -74,48 +81,48 @@ export function Footer() {
                     </h4>
                     <ul className="space-y-2 text-sm text-white/80 font-body">
                         <li>
-                            <Link href="/" className="hover:text-cta transition-colors">
+                            <Link href={locale === "pl" ? "/" : `/${locale}`} className="hover:text-cta transition-colors">
                                 Strona główna
                             </Link>
                         </li>
                         <li>
-                            <Link href="/services" className="hover:text-cta transition-colors">
-                                Usługi
+                            <Link href={route("/services")} className="hover:text-cta transition-colors">
+                                {copy.nav.services}
                             </Link>
                         </li>
                         <li>
-                            <Link href="/offers" className="hover:text-cta transition-colors">
-                                Oferta
+                            <Link href={route("/offers")} className="hover:text-cta transition-colors">
+                                {copy.nav.offers}
                             </Link>
                         </li>
                         <li>
-                            <Link href="/insights" className="hover:text-cta transition-colors">
-                                Inspiracje
+                            <Link href={route("/insights")} className="hover:text-cta transition-colors">
+                                {copy.nav.insights}
                             </Link>
                         </li>
                         <li>
-                            <Link href="/about" className="hover:text-cta transition-colors">
-                                O nas
+                            <Link href={route("/about")} className="hover:text-cta transition-colors">
+                                {copy.nav.about}
                             </Link>
                         </li>
                         <li>
-                            <Link href="/history" className="hover:text-cta transition-colors">
+                            <Link href={route("/history")} className="hover:text-cta transition-colors">
                                 Nasza historia
                             </Link>
                         </li>
                         <li>
-                            <Link href="/faq" className="hover:text-cta transition-colors">
+                            <Link href={route("/faq")} className="hover:text-cta transition-colors">
                                 FAQ
                             </Link>
                         </li>
                         <li>
-                            <Link href="/partners" className="hover:text-cta transition-colors">
+                            <Link href={route("/partners")} className="hover:text-cta transition-colors">
                                 Partnerzy
                             </Link>
                         </li>
                         <li>
-                            <Link href="/contact" className="hover:text-cta transition-colors">
-                                Kontakt
+                            <Link href={route("/contact")} className="hover:text-cta transition-colors">
+                                {copy.nav.contact}
                             </Link>
                         </li>
                     </ul>
@@ -127,22 +134,22 @@ export function Footer() {
                     </h4>
                     <ul className="space-y-2 text-sm text-white/80 font-body">
                         <li>
-                            <Link href="/terms" className="hover:text-cta transition-colors">
+                            <Link href={route("/terms")} className="hover:text-cta transition-colors">
                                 Regulamin Świadczenia Usług
                             </Link>
                         </li>
                         <li>
-                            <Link href="/privacy" className="hover:text-cta transition-colors">
+                            <Link href={route("/privacy")} className="hover:text-cta transition-colors">
                                 Polityka Prywatności
                             </Link>
                         </li>
                         <li>
-                            <Link href="/cookies" className="hover:text-cta transition-colors">
+                            <Link href={route("/cookies")} className="hover:text-cta transition-colors">
                                 Polityka Plików Cookie
                             </Link>
                         </li>
                         <li>
-                            <Link href="/cookie-preferences" className="hover:text-cta transition-colors">
+                            <Link href={route("/cookie-preferences")} className="hover:text-cta transition-colors">
                                 Preferencje Plików Cookie
                             </Link>
                         </li>
@@ -174,7 +181,7 @@ export function Footer() {
                                 required
                             />
                             <span>
-                                Zgadzam się na newsletter i przetwarzanie danych zgodnie z <Link href="/privacy" className="underline hover:text-cta">polityką prywatności</Link>.
+                                Zgadzam się na newsletter i przetwarzanie danych zgodnie z <Link href={route("/privacy")} className="underline hover:text-cta">polityką prywatności</Link>.
                             </span>
                         </label>
                         <button

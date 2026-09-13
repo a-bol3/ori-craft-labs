@@ -13,6 +13,21 @@ export const messages: Record<Locale, {
   about: string;
   aboutText: string;
   explore: string;
+  nav: {
+    services: string;
+    offers: string;
+    insights: string;
+    about: string;
+    contact: string;
+    contactCta: string;
+  };
+  insightsPage: {
+    title: string;
+    empty: string;
+    readMore: string;
+    privatePreview: string;
+    categories: Record<string, string>;
+  };
 }> = {
   pl: {
     lang: "pl",
@@ -26,6 +41,14 @@ export const messages: Record<Locale, {
     about: "O nas",
     aboutText: "Kubańsko-polski duet łączący rytmy, emocje i codzienne rytuały.",
     explore: "Odkryj więcej",
+    nav: { services: "Usługi", offers: "Oferta", insights: "Inspiracje", about: "O nas", contact: "Kontakt", contactCta: "Porozmawiajmy" },
+    insightsPage: {
+      title: "Aktualności",
+      empty: "Brak wpisów w tej chwili. Wkrótce pojawią się tu nowe historie.",
+      readMore: "Czytaj więcej",
+      privatePreview: "Prywatny podgląd — ta treść nie jest widoczna dla odwiedzających.",
+      categories: { movement: "Ruch", rituals: "Rytuały", "body-awareness": "Świadomość ciała", culture: "Kultura", other: "Inne" },
+    },
   },
   en: {
     lang: "en",
@@ -39,6 +62,14 @@ export const messages: Record<Locale, {
     about: "About us",
     aboutText: "A Cuban–Polish duo bringing rhythms, emotions and everyday rituals together.",
     explore: "Explore more",
+    nav: { services: "Services", offers: "Offers", insights: "Insights", about: "About us", contact: "Contact", contactCta: "Let’s talk" },
+    insightsPage: {
+      title: "Insights",
+      empty: "There are no posts yet. New stories will appear here soon.",
+      readMore: "Read more",
+      privatePreview: "Private preview — this content is not visible to public visitors.",
+      categories: { movement: "Movement", rituals: "Rituals", "body-awareness": "Body awareness", culture: "Culture", other: "Other" },
+    },
   },
   es: {
     lang: "es",
@@ -52,6 +83,14 @@ export const messages: Record<Locale, {
     about: "Sobre nosotros",
     aboutText: "Un dúo cubano-polaco que une ritmos, emociones y rituales cotidianos.",
     explore: "Descubre más",
+    nav: { services: "Servicios", offers: "Ofertas", insights: "Inspiración", about: "Nosotros", contact: "Contacto", contactCta: "Hablemos" },
+    insightsPage: {
+      title: "Historias",
+      empty: "Todavía no hay publicaciones. Pronto aparecerán nuevas historias.",
+      readMore: "Leer más",
+      privatePreview: "Vista previa privada — este contenido no está visible para visitantes.",
+      categories: { movement: "Movimiento", rituals: "Rituales", "body-awareness": "Conciencia corporal", culture: "Cultura", other: "Otros" },
+    },
   },
 };
 

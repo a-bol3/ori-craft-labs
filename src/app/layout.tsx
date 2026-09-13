@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Antonio, Outfit, Inter } from "next/font/google";
 import { StickyBg } from "@/components/ui/sticky-bg";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
+import { isLocale } from "@/lib/i18n";
 import "./globals.css";
 
 const antonio = Antonio({
@@ -46,13 +48,15 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const requestedLocale = (await headers()).get("x-ori-locale") ?? "pl";
+  const documentLocale = isLocale(requestedLocale) ? requestedLocale : "pl";
   return (
-    <html lang="pl">
+    <html lang={documentLocale}>
       <body
         className={`${antonio.variable} ${outfit.variable} ${inter.variable} antialiased font-body`}
       >

@@ -1,21 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 import { Logo } from "@/components/ui/logo";
 import { GlowingButton } from "@/components/ui/glowing-button";
+import { locales, messages } from "@/lib/i18n";
+import { getLocaleFromPathname, localizedHref, localizedPath } from "@/lib/locale-routing";
 
 export function Navbar() {
+    const pathname = usePathname() || "/";
+    const locale = getLocaleFromPathname(pathname);
+    const copy = messages[locale];
     const links = [
-        { href: "/services", label: "Usługi" },
-        { href: "/offers", label: "Oferta" },
-        { href: "/insights", label: "Inspiracje" },
-        { href: "/about", label: "O nas" },
-        { href: "/contact", label: "Kontakt" },
+        { href: "/services", label: copy.nav.services },
+        { href: "/offers", label: copy.nav.offers },
+        { href: "/insights", label: copy.nav.insights },
+        { href: "/about", label: copy.nav.about },
+        { href: "/contact", label: copy.nav.contact },
     ];
+    const isAdminArea = pathname.startsWith("/dashboard");
 
     const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        if (window.location.pathname === "/") {
+        if (pathname === "/" || /^\/(pl|en|es)$/.test(pathname)) {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: "smooth" });
         }
@@ -25,7 +31,7 @@ export function Navbar() {
         <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-6 bg-transparent backdrop-blur-[2px]">
             <div className="flex-1">
                 <Link
-                    href="/"
+                    href={locale === "pl" ? "/" : `/${locale}`}
                     onClick={handleLogoClick}
                     className="flex items-center"
                 >
@@ -37,7 +43,7 @@ export function Navbar() {
                 {links.map((link) => (
                     <Link
                         key={link.href}
-                        href={link.href}
+                        href={localizedPath(link.href, locale)}
                         className="text-white/80 hover:text-white transition-colors text-sm uppercase tracking-wide font-medium font-heading"
                     >
                         {link.label}
@@ -46,13 +52,20 @@ export function Navbar() {
             </div>
 
             <div className="flex-1 flex justify-end">
-                <div className="mr-4 hidden gap-2 text-xs uppercase tracking-widest text-white/60 sm:flex">
-                    <Link href="/pl" className="hover:text-cta">PL</Link>
-                    <Link href="/en" className="hover:text-cta">EN</Link>
-                    <Link href="/es" className="hover:text-cta">ES</Link>
-                </div>
-                <GlowingButton href="/contact">
-                    Sign In
+                {!isAdminArea && <div className="mr-4 hidden gap-2 text-xs uppercase tracking-widest text-white/60 sm:flex">
+                    {locales.map((targetLocale) => (
+                        <Link
+                            key={targetLocale}
+                            href={localizedHref(pathname, targetLocale)}
+                            aria-current={targetLocale === locale ? "page" : undefined}
+                            className={targetLocale === locale ? "text-cta" : "hover:text-cta"}
+                        >
+                            {targetLocale.toUpperCase()}
+                        </Link>
+                    ))}
+                </div>}
+                <GlowingButton href={localizedPath("/contact", locale)}>
+                    {copy.nav.contactCta}
                 </GlowingButton>
             </div>
         </nav>

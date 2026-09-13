@@ -74,3 +74,11 @@ publishing content never sends or duplicates a customer notification.
 ## Recovery
 
 CockroachDB backups and exports are required in addition to its internal replication. Test restoration into a separate database before production cutover. A VPS backup alone does not protect a managed database, and a database backup alone does not keep the web application available if the VPS fails.
+
+### Production backup verification status — 2026-09-13
+
+Not yet verified. Before production sign-off, record the managed cluster's
+backup schedule, retention period, most recent successful backup, and recovery
+point objective. Restore a backup into a separate non-production database,
+then run `npm run db:verify` against that restored database. Do not restore over
+production, and do not put connection strings or credentials in this record.

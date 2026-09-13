@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale, locales, messages } from "@/lib/i18n";
 
-const slugs = ["services", "about", "contact", "insights", "history", "faq", "partners", "legal", "privacy", "terms", "cookies", "cookie-preferences"] as const;
+const slugs = ["services", "about", "contact", "history", "faq", "partners", "legal", "privacy", "terms", "cookies", "cookie-preferences"] as const;
 
 export const dynamic = "force-dynamic";
 
